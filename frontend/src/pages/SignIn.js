@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { API } from '../config';
 
 const SignIn = () => {
-  const [email, setEmail] = useState('suraj@google.com');
-  const [pass, setPass] = useState('1245');
+  const [email, setEmail] = useState('');
+  const [pass, setPass] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
