@@ -1,0 +1,6 @@
+.App-header {
+  display: flex;
+  justify-content: space-around;
+  height: 8vh;
+  background-color: #666;
+}
