@@ -1,21 +1,26 @@
-require('dotenv').config();
-require('./config/database').connect();
+// Import Packge
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const cors = require('cors');
 var cookieParser = require('cookie-parser');
+
+// Import from local project
+require('dotenv').config();
+require('./config/database').connect();
 const User = require('./model/user');
 const Contactus = require('./model/contactus');
 const auth = require('./middleware/auth');
-const cors = require('cors');
+
+// create express app
 const app = express();
+
+// middleware
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors());
-app.get('/', (req, res) => {
-  res.send('<h1>Hello from auth</h1>');
-});
 
+// refister route for creating new user
 app.post('/register', async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -37,7 +42,7 @@ app.post('/register', async (req, res) => {
       password: myEncPassword,
     });
 
-    //token
+    // create token
     const token = jwt.sign(
       { user_id: user._id, email },
       process.env.SECRET_KEY,
@@ -46,9 +51,7 @@ app.post('/register', async (req, res) => {
       }
     );
     user.token = token;
-    //update or not in DB
 
-    // handle password situation
     user.password = undefined;
 
     // send token or send just success yes and redirect - choice
@@ -57,30 +60,8 @@ app.post('/register', async (req, res) => {
     console.log(error);
   }
 });
-app.post('/contactus', async (req, res) => {
-  try {
-    const { name, email, message } = req.body;
 
-    if (!(email && message && name)) {
-      res.status(400).send('All fields are required');
-    }
-
-    Contactus.create({
-      name,
-      email: email.toLowerCase(),
-      message,
-    })
-      .then(() => {
-        res.status(200).send('Success');
-      })
-      .catch((err) => {
-        res.status(400).send('Errr');
-      });
-  } catch (error) {
-    console.log(error);
-  }
-});
-
+// login route for verifing user
 app.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -91,8 +72,8 @@ app.post('/login', async (req, res) => {
 
     const user = await User.findOne({ email });
 
-    // if(!user){
-    //   res.status(400).send("You are not registered in our app")
+    // if (!user) {
+    //   res.status(400).send('You are not registered in our app');
     // }
 
     if (user && (await bcrypt.compare(password, user.password))) {
@@ -126,8 +107,36 @@ app.post('/login', async (req, res) => {
   }
 });
 
+// contactus route for saving query info form user
+app.post('/contactus', async (req, res) => {
+  try {
+    const { name, email, message } = req.body;
+
+    if (!(email && message && name)) {
+      res.status(400).send('All fields are required');
+    }
+
+    Contactus.create({
+      name,
+      email: email.toLowerCase(),
+      message,
+    })
+      .then(() => {
+        res.status(200).json({ message: 'Your Response is Recoded.' });
+      })
+      .catch((err) => {
+        res.status(400).send('Errr');
+      });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+// Protected route from non-login user
 app.get('/dashboard', auth, (req, res) => {
   res.send('Welcome to secret information');
 });
-
+app.get('/', (req, res) => {
+  res.send('<h1>Hello from auth</h1>');
+});
 module.exports = app;

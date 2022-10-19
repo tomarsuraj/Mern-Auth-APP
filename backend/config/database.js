@@ -1,4 +1,6 @@
-const mongoose = require("mongoose");
+// database connection file
+
+const mongoose = require('mongoose');
 
 const { MONGODB_URL } = process.env;
 

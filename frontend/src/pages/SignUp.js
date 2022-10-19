@@ -1,12 +1,16 @@
 import { Container, Form, Button } from 'react-bootstrap';
 import React, { useState } from 'react';
 import { API } from '../config';
+import { useNavigate } from 'react-router-dom';
 
 const SignUp = () => {
   const [email, setEmail] = useState('suraj@gmail.com');
   const [pass, setPass] = useState('1245');
   const [name, setName] = useState('');
+  const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
+  // function for handing singup request
   const handelSubmit = (e) => {
     e.preventDefault();
     console.log('HHSH');
@@ -27,16 +31,27 @@ const SignUp = () => {
       }
     )
       .then((response) => {
+        console.log('response.json()', response.status);
         console.log(response.json());
+
+        if (response.status === 201) {
+          navigate('/');
+        } else if (response.status === 401) {
+          setMessage('User already exists');
+        } else {
+          setMessage('Error Occure');
+        }
       })
       .catch((err) => console.log(err));
   };
   return (
-    <Container>
-      <h2>Welcome Back</h2>
-      <h3>Log in to check your Account</h3>
+    <Container
+      fluid="md"
+      className="pt-5 d-flex flex-column align-items-center "
+    >
+      <h3>Create Account</h3>
 
-      <Form onSubmit={handelSubmit}>
+      <Form onSubmit={handelSubmit} className="w-75">
         <Form.Group className="mb-3" controlId="formBasicName">
           <Form.Label>Name</Form.Label>
           <Form.Control
@@ -72,13 +87,12 @@ const SignUp = () => {
             onChange={(e) => setPass(e.target.value)}
           />
         </Form.Group>
-        <Form.Group className="mb-3" controlId="formBasicCheckbox">
-          <Form.Check type="checkbox" label="Check me out" />
-        </Form.Group>
+
         <Button variant="primary" type="submit">
           Submit
         </Button>
       </Form>
+      {message ? <h3>{message}</h3> : null}
     </Container>
   );
 };

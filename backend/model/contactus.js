@@ -1,3 +1,4 @@
+// Contact us schema
 const mongoose = require('mongoose');
 
 const contactUsSchema = new mongoose.Schema({

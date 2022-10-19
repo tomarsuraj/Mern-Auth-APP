@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { Container, Form, Button } from 'react-bootstrap';
 import { API } from '../config';
 
+// contactus page for website
 export const Contactus = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
 
+  // function to handel submit contatc us form
   const handelSubmit = (e) => {
     e.preventDefault();
     fetch(
@@ -26,16 +28,20 @@ export const Contactus = () => {
       }
     )
       .then((response) => {
-        console.log(response.json());
+        setName('');
+        setEmail('');
+        setMessage('');
       })
       .catch((err) => console.log(err));
   };
-
   return (
-    <Container>
+    <Container
+      fluid="md"
+      className="pt-5 d-flex flex-column align-items-center "
+    >
       <h2>Contact Us</h2>
 
-      <Form onSubmit={handelSubmit}>
+      <Form onSubmit={handelSubmit} className="w-75 align-center">
         <Form.Group className="mb-3" controlId="formBasicName">
           <Form.Label>Name</Form.Label>
           <Form.Control
